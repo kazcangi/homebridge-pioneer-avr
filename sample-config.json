@@ -1,0 +1,23 @@
+{
+    "bridge": {
+        "name": "HomebridgePI",
+        "username": "CD:22:3D:E3:CE:30",
+        "port": 51826,
+        "pin": "031-45-156"
+    },
+    
+    "description": "Hello World",
+
+    "platforms": [],
+
+    "accessories": [
+        {
+            "accessory": "pioneerAvrAccessory",
+            "model": "VSX-922",
+            "name": "My Pioneer AVR",
+            "description": "AV Receiver",
+            "host": "192.168.99.99",
+            "port": 23
+        }
+    ]
+}
