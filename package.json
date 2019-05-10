@@ -1,6 +1,6 @@
 {
   "name": "homebridge-pioneer-avr",
-  "version": "0.4",
+  "version": "0.6.1",
   "description": "Pioneer AVR plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "keywords": [
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/TG908/homebridge-vsx.git"
+    "url": "git://github.com/kazcangi/homebridge-pioneer-avr.git"
   },
   "dependencies": {
     "net": "",
