@@ -26,7 +26,7 @@ function pioneerAvrAccessory(log, config) {
 
     log.info(this.prefsDir);
     this.manufacturer = "Pioneer";
-    this.version = "0.6";
+    this.version = "0.6.2";
 
     // check if prefs directory ends with a /, if not then add it
     if (this.prefsDir.endsWith('/') === false) {
