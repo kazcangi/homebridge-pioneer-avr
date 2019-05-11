@@ -47,6 +47,10 @@ https://github.com/TG908/homebridge-vsx
 
 ## Release Notes
 
+### v0.7.0
+
+* Use AVR's web interface if available
+
 ### v0.6
 
 * First support for remote keys (through Control Center -> Remote on iOS)

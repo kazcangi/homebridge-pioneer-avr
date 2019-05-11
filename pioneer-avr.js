@@ -3,6 +3,7 @@
 */
 
 const net = require('net');
+const request = require('request');
 
 const MSG_INTERVAL_MS = 250;
 
@@ -62,6 +63,19 @@ function PioneerAvr(log, host, port) {
     // Inputs' list
     this.inputs = [];
 
+    // Web interface ?
+    this.web = false;
+    this.webStatusUrl = 'http://' + this.host + '/StatusHandler.asp';
+    this.webEventHandlerBaseUrl = 'http://' + this.host + '/EventHandler.asp?WebToHostItem=';
+    request
+        .get(this.webStatusUrl)
+        .on('response', function(response) {
+            if (response.statusCode == '200') {
+                me.log.info('Web Interface enabled');
+                this.web = true;
+            }
+        });
+
     // Communication Initialization
     this.s = new net.Socket();
     this.s.on('error', function (ex) {
@@ -120,16 +134,25 @@ PioneerAvr.prototype.powerStatus = function(callback) {
 
 PioneerAvr.prototype.powerOn = function() {
     this.log.debug('Power on');
-    // Dirty hack to avoid communication error when key pressed
-    // in remote in control center. When key is pressed, power on signal
-    // is send simultenaeously with command.
-    require('deasync').sleep(100);
-    this.sendCommand('PO');
+
+    if (this.web) {
+        request.get(this.webEventHandlerBaseUrl + 'PO');
+    } else {
+        // Dirty hack to avoid communication error when key pressed
+        // in remote in control center. When key is pressed, power on signal
+        // is send simultenaeously with command.
+        require('deasync').sleep(100);
+        this.sendCommand('PO');
+    }
 };
 
 PioneerAvr.prototype.powerOff = function() {
     this.log.debug('Power off');
-    this.sendCommand('PF');
+    if (this.web) {
+        request.get(this.webEventHandlerBaseUrl + 'PF');
+    } else {
+        this.sendCommand('PF');
+    }
 };
 
 // Volume methods
@@ -155,12 +178,20 @@ PioneerAvr.prototype.setVolume = function(targetVolume, callback) {
 
 PioneerAvr.prototype.volumeUp = function() {
     this.log.debug('Volume up');
-    this.sendCommand('VU');
+    if (this.web) {
+        request.get(this.webEventHandlerBaseUrl + 'VU');
+    } else {
+        this.sendCommand('VU');
+    }
 };
 
 PioneerAvr.prototype.volumeDown = function() {
     this.log.debug('Volume down');
-    this.sendCommand('VD');
+    if (this.web) {
+        request.get(this.webEventHandlerBaseUrl + 'VD');
+    } else {
+        this.sendCommand('VD');
+    }
 };
 
 // Mute methods
@@ -177,12 +208,20 @@ PioneerAvr.prototype.muteStatus = function(callback) {
 
 PioneerAvr.prototype.muteOn = function() {
     this.log.debug('Mute on');
-    this.sendCommand('MO');
+    if (this.web) {
+        request.get(this.webEventHandlerBaseUrl + 'MO');
+    } else {
+        this.sendCommand('MO');
+    }
 };
 
 PioneerAvr.prototype.muteOff = function() {
     this.log.debug('Mute off');
-    this.sendCommand('MF');
+    if (this.web) {
+        request.get(this.webEventHandlerBaseUrl + 'MF');
+    } else {
+        this.sendCommand('MF');
+    }
 };
 
 // Input management method
@@ -198,7 +237,11 @@ PioneerAvr.prototype.inputStatus = function(callback) {
 };
 
 PioneerAvr.prototype.setInput = function(id) {
-    this.sendCommand(`${id}FN`);
+    if (this.web) {
+        request.get(this.webEventHandlerBaseUrl + `${id}FN`);
+    } else {
+        this.sendCommand(`${id}FN`);
+    }
 };
 
 PioneerAvr.prototype.renameInput = function (id, newName) {
