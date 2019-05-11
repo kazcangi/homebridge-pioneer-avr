@@ -1,6 +1,6 @@
 {
   "name": "homebridge-pioneer-avr",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "Pioneer AVR plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "MIT",
   "keywords": [
@@ -20,7 +20,8 @@
   "dependencies": {
     "net": "",
     "deasync": "",
-    "mkdirp": "^0.5.1",
-    "persist-path": "^1.0.2"
+    "mkdirp": "",
+    "persist-path": "",
+    "request": ""
   }
 }

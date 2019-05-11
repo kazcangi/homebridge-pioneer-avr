@@ -24,9 +24,9 @@ function pioneerAvrAccessory(log, config) {
     this.model = config.model || "VSX-922";
     this.prefsDir = config.prefsDir || ppath('pioneerAvr/');
 
-    log.info(this.prefsDir);
+    log.debug('Preferences directory : %s', this.prefsDir);
     this.manufacturer = "Pioneer";
-    this.version = "0.6.2";
+    this.version = "0.7.0";
 
     // check if prefs directory ends with a /, if not then add it
     if (this.prefsDir.endsWith('/') === false) {

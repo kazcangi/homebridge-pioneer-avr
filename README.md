@@ -39,7 +39,17 @@ Declare your AVR as a homekit TV :
 
 *Notice: If port 23 does not work, try port 8102.
 
+## Links
+
+https://github.com/rwifall/pioneer-receiver-notes
+https://github.com/merdok/homebridge-webos-tv
+https://github.com/TG908/homebridge-vsx
+
 ## Release Notes
+
+### v0.7.0
+
+* Use AVR's web interface if available
 
 ### v0.6
 
