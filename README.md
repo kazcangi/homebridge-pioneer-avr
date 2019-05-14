@@ -42,7 +42,9 @@ Declare your AVR as a homekit TV :
 ## Links
 
 https://github.com/rwifall/pioneer-receiver-notes
+
 https://github.com/merdok/homebridge-webos-tv
+
 https://github.com/TG908/homebridge-vsx
 
 ## Release Notes

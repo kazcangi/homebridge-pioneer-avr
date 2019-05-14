@@ -127,6 +127,7 @@ PioneerAvr.prototype.__updatePower = function(callback) {
 };
 
 PioneerAvr.prototype.powerStatus = function(callback) {
+    require('deasync').sleep(100);
     this.__updatePower(() => {
         callback(null, this.state.on);
     });
