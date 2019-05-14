@@ -1,10 +1,13 @@
 {
   "name": "homebridge-pioneer-avr",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Pioneer AVR plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "MIT",
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "pioneer",
+    "tv",
+    "avr"
   ],
   "engines": {
     "node": ">=0.12.0",
