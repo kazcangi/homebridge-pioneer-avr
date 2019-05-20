@@ -80,6 +80,7 @@ function PioneerAvr(log, host, port) {
     this.s = new net.Socket();
     this.s.on('error', function (ex) {
         log.info("Received an error while communicating " + ex);
+        me.isBusy = false;
         return(ex);
     });
 
@@ -89,8 +90,8 @@ function PioneerAvr(log, host, port) {
 
     this.s.on('close', function (ex) {
         log.debug('Connection closed. Queue length : %s', me.queue.length);
-        me.isBusy = false;
         // Wait for AVR to close connection before send next command
+        me.isBusy = false;
         setTimeout(() => {me.__sendNext();}, MSG_INTERVAL_MS);
     });
 
