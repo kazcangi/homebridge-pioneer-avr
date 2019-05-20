@@ -31,7 +31,7 @@ Declare your AVR as a homekit TV :
         "model": "VSX-922",
         "name": "My Pioneer AVR",
         "description": "AV Receiver",
-        "ip": "192.168.178.99",
+        "host": "192.168.178.99",
         "port": 23
 	}
 ]
