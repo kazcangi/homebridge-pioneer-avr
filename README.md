@@ -49,6 +49,10 @@ https://github.com/TG908/homebridge-vsx
 
 ## Release Notes
 
+### v0.8.0
+
+* Completely rewrite communication with AVR
+
 ### v0.7.0
 
 * Use AVR's web interface if available
