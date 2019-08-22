@@ -2,8 +2,8 @@
     Helper module for controlling Pioneer AVR
 */
 
-const net = require('net');
 const request = require('request');
+const TelnetAvr = require('./telnet-avr');
 
 const MSG_INTERVAL_MS = 250;
 
@@ -77,34 +77,7 @@ function PioneerAvr(log, host, port) {
         });
 
     // Communication Initialization
-    this.s = new net.Socket();
-    this.s.on('error', function (ex) {
-        log.info("Received an error while communicating " + ex);
-        me.isBusy = false;
-        return(ex);
-    });
-
-    this.s.on('end', function (ex) {
-        log.debug("Connection Ended");
-    });
-
-    this.s.on('close', function (ex) {
-        log.debug('Connection closed. Queue length : %s', me.queue.length);
-        // Wait for AVR to close connection before send next command
-        me.isBusy = false;
-        setTimeout(() => {me.__sendNext();}, MSG_INTERVAL_MS);
-    });
-
-    this.s.on('data', this.onData.bind(this));
-
-    // Command queue
-    this.queue = [];
-
-    // Callback queue. Callbacks will be poped on a '?**' command
-    this.callbackQueue = [];
-
-    // AVR handles only one command at one
-    this.isBusy = false;
+    this.s = new TelnetAvr(this.host, this.port);
 
     // Dealing with input's initialization
     this.initCount = 0;
@@ -140,10 +113,6 @@ PioneerAvr.prototype.powerOn = function() {
     if (this.web) {
         request.get(this.webEventHandlerBaseUrl + 'PO');
     } else {
-        // Dirty hack to avoid communication error when key pressed
-        // in remote in control center. When key is pressed, power on signal
-        // is send simultenaeously with command.
-        require('deasync').sleep(100);
         this.sendCommand('PO');
     }
 };
@@ -252,6 +221,7 @@ PioneerAvr.prototype.renameInput = function (id, newName) {
 };
 
 // Remote Key methods
+
 PioneerAvr.prototype.remoteKey = function (rk) {
     // Implemented key from CURSOR OPERATION
     switch (rk) {
@@ -281,21 +251,22 @@ PioneerAvr.prototype.remoteKey = function (rk) {
     }
 };
 
-// Manage date returned by AVR
+// Send command and process return
 
-PioneerAvr.prototype.onData = function(d) {
-    let data = d
-        .toString()
-        .replace('\n', '')
-        .replace('\r', '');
-
-    this.log.debug(`Data from avr: ${data}`);
+PioneerAvr.prototype.sendCommand = async function(command, callback) {
+    // Main method to send a command to AVR
+    try {
+        this.log.debug('Send command : %s', command);
+        data = await this.s.sendMessage(command);
+        this.log.debug('Receive data : %s', data);
+    } catch (e) {
+        this.log.error(e)
+    }
 
     // Data returned for power status
     if (data.startsWith('PWR')) {
         this.log.debug('Receive Power status : %s', data);
         this.state.on = parseInt(data[3], 10) === 0;
-        let callback = this.callbackQueue.shift();
         callback();
     }
 
@@ -303,7 +274,6 @@ PioneerAvr.prototype.onData = function(d) {
     if (data.startsWith('MUT')) {
         this.log.debug('Receive Mute status : %s', data);
         this.state.muted = parseInt(data[3], 10) === 0;
-        let callback = this.callbackQueue.shift();
         callback();
     }
 
@@ -313,7 +283,6 @@ PioneerAvr.prototype.onData = function(d) {
         var volPctF = Math.floor(parseInt(vol) * 100 / 185);
         this.state.volume = Math.floor(volPctF);
         this.log.debug("Volume is %s (%s%)", vol, this.state.volume);
-        let callback = this.callbackQueue.shift();
         callback();
     }
 
@@ -328,7 +297,6 @@ PioneerAvr.prototype.onData = function(d) {
             }
         }
         this.state.input = inputIndex;
-        let callback = this.callbackQueue.shift();
         callback();
     }
 
@@ -340,7 +308,6 @@ PioneerAvr.prototype.onData = function(d) {
             type: inputToType[data.substr(3,2)]
             };
         this.inputs.push(tmpInput);
-        let callback = this.callbackQueue.shift();
         if (!this.isReady) {
             this.initCount = this.initCount + 1;
             this.log.debug('Input [%s] discovered (id: %s, type: %s). InitCount=%s/%s',
@@ -358,7 +325,6 @@ PioneerAvr.prototype.onData = function(d) {
     // E06 is returned when input not exists
     if (data.startsWith('E06')) {
         this.log.debug('Receive E06 error');
-        let callback = this.callbackQueue.shift();
         if (!this.isReady) {
             this.initCount = this.initCount + 1;
             this.log.debug('Input does not exists. InitCount=%s/%s',
@@ -368,44 +334,5 @@ PioneerAvr.prototype.onData = function(d) {
             if (this.initCount == Object.keys(inputToType).length) this.isReady = true;
         }
     }
-    this.s.end();
-};
-
-PioneerAvr.prototype.__sendData = function(data) {
-    // Write data to AVR socket
-    const me = this;
-
-    me.log.debug('Send data %s to %s:%s', data, this.host, this.port);
-
-    me.s.connect(this.port, this.host, function() {
-        me.log.debug('Connecting. Command : %s', data);
-        me.s.write(`${data}\r\n`);
-        if (!data.startsWith('?')) {
-            me.s.end();
-        }
-    });
-};
-
-PioneerAvr.prototype.sendCommand = function(command, callback) {
-    // Main method to send a command to AVR
-    if (typeof callback !== 'undefined') {
-        // Push callback if defined
-        this.callbackQueue.push(callback);
-    }
-    this.log.debug('Queuing command %s', command);
-    this.queue.push(command);
-
-    this.__sendNext();
-};
-
-PioneerAvr.prototype.__sendNext = function() {
-    if (this.isBusy || !this.queue.length) {
-        // If a command is being processed, return directly
-        return;
-    }
-    this.isBusy = true;
-
-    let msg = this.queue.shift();
-    this.__sendData(msg);
 };
 
