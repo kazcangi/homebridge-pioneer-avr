@@ -21,7 +21,9 @@ class TelnetAvr {
     socket.setTimeout(2000, () => socket.destroy());
     socket.once('connect', () => socket.setTimeout(0));
     socket.connect(me.port, me.host, () => {
-     socket.write(message+'\r\n');
+     socket.write(message+'\r');
+     require('deasync').sleep(100);
+     socket.write(message+'\r');
      if (!message.startsWith('?')) {
       resolve(message + ':SENT');
       socket.end();

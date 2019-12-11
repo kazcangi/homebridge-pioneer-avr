@@ -5,8 +5,6 @@
 const request = require('request');
 const TelnetAvr = require('./telnet-avr');
 
-const MSG_INTERVAL_MS = 250;
-
 // Reference fot input id -> Characteristic.InputSourceType
 const inputToType = {
         '00': 0, // PHONO -> Characteristic.InputSourceType.OTHER

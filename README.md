@@ -1,7 +1,7 @@
 # homebridge-pioneer-avr [![npm version](https://badge.fury.io/js/homebridge-pioneer-avr.svg)](https://badge.fury.io/js/homebridge-pioneer-avr)
 
 homebridge-pioneer-avr is a plugin made for [homebridge](https://github.com/nfarina/homebridge),
-which declare your Pioneer AVR as a TV in homekit (iOS 12.2 nedded).
+which declare your Pioneer AVR as a TV in homekit (iOS 12.2 needed).
 It should work with Pioneer AVRs supported by the iControl AV5 App. It works well with my VSX-922.
 
 ## Features
@@ -48,6 +48,10 @@ https://github.com/merdok/homebridge-webos-tv
 https://github.com/TG908/homebridge-vsx
 
 ## Release Notes
+
+### v0.8.1
+
+* Modify telnet-avr to comply with RS232 specs
 
 ### v0.8.0
 
