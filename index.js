@@ -251,7 +251,7 @@ pioneerAvrAccessory.prototype.setMuted = function (mute, callback) {
 pioneerAvrAccessory.prototype.getVolume = function (callback) {
     // Get volume status
     this.log.info('Get volume status');
-    this.volumeStatus(callback);
+    this.avr.volumeStatus(callback);
 };
 
 pioneerAvrAccessory.prototype.setVolume = function (volume, callback) {
